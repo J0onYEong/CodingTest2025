@@ -36,6 +36,51 @@ class Solution {
         return false
     }
     
+    
+    private func backTracking(subSetIndex: Int, nums: [Int], numVisit: inout [Bool], sumOfSubSet: inout [Int], targetSum: Int, nextNumIndex: Int) -> Bool {
+        
+        if subSetIndex == sumOfSubSet.count-1 {
+            // 다른 집합들의 총합이 알맞게 채워졌음으로 마지막 집합은 연산 불필요
+            return true
+        }
+        
+        if sumOfSubSet[subSetIndex] == targetSum {
+            return backTracking(
+                subSetIndex: subSetIndex+1,
+                nums: nums,
+                numVisit: &numVisit,
+                sumOfSubSet: &sumOfSubSet,
+                targetSum: targetSum,
+                nextNumIndex: 0
+            )
+        }
+        
+        for numIndex in nextNumIndex..<nums.count {
+            if numVisit[numIndex] == false {
+                // 방문하지 않은 수인 경우
+                let temp = sumOfSubSet[subSetIndex] + nums[numIndex]
+                if temp <= targetSum {
+                    numVisit[numIndex] = true
+                    sumOfSubSet[subSetIndex] = temp
+                    let result = backTracking(
+                        subSetIndex: subSetIndex,
+                        nums: nums,
+                        numVisit: &numVisit,
+                        sumOfSubSet: &sumOfSubSet,
+                        targetSum: targetSum,
+                        nextNumIndex: numIndex + 1
+                    )
+                    if result { return true }
+                    sumOfSubSet[subSetIndex] -= nums[numIndex]
+                    numVisit[numIndex] = false
+                }
+            }
+        }
+        
+        return false
+    }
+    
+    
     func canPartitionKSubsets(_ nums: [Int], _ k: Int) -> Bool {
         
         let sumOfNums = nums.reduce(0, +)
@@ -48,11 +93,22 @@ class Solution {
         
         let sorted = nums.sorted(by: { $0 > $1 })
         
+//        let result = backTracking(
+//            index: 0,
+//            nums: sorted,
+//            sumOfSets: &sumOfSets,
+//            targetSum: targetSumOfSet
+//        )
+        
+        var numVisit: [Bool] = Array(repeating: false, count: nums.count)
+        
         let result = backTracking(
-            index: 0,
+            subSetIndex: 0,
             nums: sorted,
-            sumOfSets: &sumOfSets,
-            targetSum: targetSumOfSet
+            numVisit: &numVisit,
+            sumOfSubSet: &sumOfSets,
+            targetSum: targetSumOfSet,
+            nextNumIndex: 0
         )
         
         return result
