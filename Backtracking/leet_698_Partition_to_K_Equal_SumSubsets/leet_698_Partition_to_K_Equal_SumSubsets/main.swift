@@ -14,7 +14,14 @@ class Solution {
             return sumOfSets.filter({ $0 == targetSum }).count == sumOfSets.count
         }
         
+        var failed: Set<Int> = .init()
         for setIndex in 0..<sumOfSets.count {
+            
+            if failed.contains(sumOfSets[setIndex]) {
+                // 실패했던 집합과 동일한 상황을 중복하지 않음
+                continue
+            }
+            
             let currentNumber = nums[index]
             let temp = sumOfSets[setIndex] + currentNumber
             if temp <= targetSum {
@@ -30,6 +37,7 @@ class Solution {
                     return true
                 }
                 sumOfSets[setIndex] -= currentNumber
+                failed.insert(sumOfSets[setIndex])
             }
         }
         
@@ -93,23 +101,23 @@ class Solution {
         
         let sorted = nums.sorted(by: { $0 > $1 })
         
-//        let result = backTracking(
-//            index: 0,
-//            nums: sorted,
-//            sumOfSets: &sumOfSets,
-//            targetSum: targetSumOfSet
-//        )
-        
-        var numVisit: [Bool] = Array(repeating: false, count: nums.count)
-        
         let result = backTracking(
-            subSetIndex: 0,
+            index: 0,
             nums: sorted,
-            numVisit: &numVisit,
-            sumOfSubSet: &sumOfSets,
-            targetSum: targetSumOfSet,
-            nextNumIndex: 0
+            sumOfSets: &sumOfSets,
+            targetSum: targetSumOfSet
         )
+        
+//        var numVisit: [Bool] = Array(repeating: false, count: nums.count)
+//        
+//        let result = backTracking(
+//            subSetIndex: 0,
+//            nums: sorted,
+//            numVisit: &numVisit,
+//            sumOfSubSet: &sumOfSets,
+//            targetSum: targetSumOfSet,
+//            nextNumIndex: 0
+//        )
         
         return result
     }
